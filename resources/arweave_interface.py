@@ -65,19 +65,22 @@ class Organization:
                   }
                 }
             """
-                % (self._conf.get("application_name"), self.org, conf['graphql_page_size'], cursor)
+                % (self._conf.get("application_name"), self.org, conf["graphql_page_size"], cursor)
             )
             res = self._gql_client.execute(query)
             print(res)
 
             if len(res["transactions"]["edges"]) > 0:
-                if len(res['transactions']['edges']) != conf['graphql_page_size']: complete = True # We didn't get the page size, therefore we have all the data
+                if len(res["transactions"]["edges"]) != conf["graphql_page_size"]:
+                    complete = True  # We didn't get the page size, therefore we have all the data
 
-                cursor = res['transactions']['edges'][-1]['cursor']
+                cursor = res["transactions"]["edges"][-1]["cursor"]
                 self.exists = True
 
                 # Start off with an initial authorized user of the user who created the org
-                self.authorized_users = [res["transactions"]["edges"][0]["node"]["owner"]["address"]]
+                self.authorized_users = [
+                    res["transactions"]["edges"][0]["node"]["owner"]["address"]
+                ]
 
                 self.homepage = ""  # Start with a blank homepage link
 
@@ -198,7 +201,7 @@ class ArweaveBackend:
                     image_name,
                     tag_name,
                     json.dumps(org.authorized_users),
-                    conf['graphql_page_size'],
+                    conf["graphql_page_size"],
                     cursor,
                 )
             )
@@ -209,8 +212,10 @@ class ArweaveBackend:
             edges.extend(cur_edges)
 
             print(len(cur_edges))
-            if len(cur_edges) > 0: cursor = cur_edges[-1]['cursor']
-            if len(cur_edges) != conf['graphql_page_size']: complete = True
+            if len(cur_edges) > 0:
+                cursor = cur_edges[-1]["cursor"]
+            if len(cur_edges) != conf["graphql_page_size"]:
+                complete = True
 
         # Filter by those who are valid, as a double check
         txs = [tx["node"] for tx in edges if tx["node"]["owner"]["address"] in org.authorized_users]
@@ -262,7 +267,7 @@ class ArweaveBackend:
                     image_name,
                     ref,
                     json.dumps(org.authorized_users),
-                    conf['graphql_page_size'],
+                    conf["graphql_page_size"],
                     cursor,
                 )
             )
@@ -272,8 +277,10 @@ class ArweaveBackend:
             cur_edges = res["transactions"]["edges"]
             edges.extend(cur_edges)
 
-            if len(cur_edges) > 0: cursor = cur_edges[-1]['cursor']
-            if len(cur_edges) != conf['graphql_page_size']: complete = True
+            if len(cur_edges) > 0:
+                cursor = cur_edges[-1]["cursor"]
+            if len(cur_edges) != conf["graphql_page_size"]:
+                complete = True
 
         # Filter by those who are valid
         txs = [tx["node"] for tx in edges if tx["node"]["owner"]["address"] in org.authorized_users]
@@ -313,8 +320,10 @@ class ArweaveBackend:
             print("Not authorized")
             return False
 
-        with open(file_path, 'rb', buffering=0) as file_handler:
-            tx = arweave.Transaction(wallet=self._wallet, file_handler=file_handler, file_path=file_path)
+        with open(file_path, "rb", buffering=0) as file_handler:
+            tx = arweave.Transaction(
+                wallet=self._wallet, file_handler=file_handler, file_path=file_path
+            )
 
             tx.add_tag("app", self._conf["application_name"])
             tx.add_tag("type", "content")
@@ -328,7 +337,9 @@ class ArweaveBackend:
             while not uploader.is_complete:
                 uploader.upload_chunk()
 
-                print(f"Upload file: {organization}/{image_name}:{ref}: Chunks {uploader.uploaded_chunks}/{uploader.total_chunks}")
+                print(
+                    f"Upload file: {organization}/{image_name}:{ref}: Chunks {uploader.uploaded_chunks}/{uploader.total_chunks}"
+                )
 
             return tx.id
 

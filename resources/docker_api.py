@@ -21,6 +21,7 @@ ar = ArweaveBackend()
 
 refcache = TTLCache(maxsize=10000, ttl=300)
 
+
 class Manifests(HTTPEndpoint):
 
     # Patch for https://github.com/encode/starlette/issues/1221
@@ -210,10 +211,10 @@ class BlobUpload(HTTPEndpoint):
         with open(upload_file_path, "ab+") as upload_file:
             upload_file.write(body)
 
-        upload =  BackgroundTask(ar.upload_file, organization, image_name, ref, upload_file_path)
+        upload = BackgroundTask(ar.upload_file, organization, image_name, ref, upload_file_path)
 
         # Cache the ref so the HEAD right after upload sees it as complete
-        refcache[ref] = 'uploading'
+        refcache[ref] = "uploading"
 
         resp = Response(
             "",
@@ -222,7 +223,7 @@ class BlobUpload(HTTPEndpoint):
                 "docker-content-digest": ref,
                 "location": f"/v2/{organization}/{image_name}/blobs/{ref}",
             },
-            background=upload
+            background=upload,
         )
 
         return resp
