@@ -1,4 +1,4 @@
-
-.vscode/settings.json
-test_crt/localhost+1-key.pem
-test_crt/localhost+1.pem
+__pycache__/*
+.vscode/*
+test_crt/*
+arweave-key-PermaCR.json
