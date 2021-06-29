@@ -1,0 +1,7 @@
+arweave-python-client
+flask
+gql[all]
+flask_restful
+starlette
+uvicorn
+cachetools
